@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinic Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --light-bg: #f4f4f4;
+            --dark-bg: #343a40;
+            --text-light: #fff;
+            --text-dark: #333;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--light-bg);
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            position: relative;
+        }
+
+        header img {
+            height: 60px;
+        }
+
+        #login-btn {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            background: linear-gradient(90deg, #007bff 0%, #00c6ff 100%);
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 32px 12px 48px;
+            font-weight: bold;
+            font-size: 1.1em;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0, 123, 255, 0.15), 0 1.5px 4px rgba(0,0,0,0.08);
+            transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
+            outline: none;
+            z-index: 10;
+            background-repeat: no-repeat;
+            background-position: 18px center;
+            background-size: 22px 22px;
+            background-image: url('https://img.icons8.com/ios-filled/50/ffffff/login-rounded-right.png');
+        }
+        #login-btn:hover, #login-btn:focus {
+            background: linear-gradient(90deg, #0056b3 0%, #00aaff 100%);
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 8px 24px rgba(0, 123, 255, 0.22), 0 2px 8px rgba(0,0,0,0.10);
+        }
+        #logout-btn {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            background: linear-gradient(90deg, #ff512f 0%, #dd2476 100%);
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 32px 12px 48px;
+            font-weight: bold;
+            font-size: 1.1em;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(221,36,118,0.15), 0 1.5px 4px rgba(0,0,0,0.08);
+            transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
+            outline: none;
+            z-index: 10;
+            background-repeat: no-repeat;
+            background-position: 18px center;
+            background-size: 22px 22px;
+            background-image: url('https://img.icons8.com/ios-filled/50/ffffff/logout-rounded-left.png');
+        }
+        #logout-btn:hover, #logout-btn:focus {
+            background: linear-gradient(90deg, #b31217 0%, #ff512f 100%);
+            transform: translateY(-2px) scale(1.04) rotate(-2deg);
+            box-shadow: 0 8px 24px rgba(221,36,118,0.22), 0 2px 8px rgba(0,0,0,0.10);
+            letter-spacing: 1px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .tabs button {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .tabs button:hover {
+            background: #0056b3;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        h2 {
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2::before {
+            content: "";
+            width: 30px;
+            height: 30px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            display: inline-block;
+        }
+
+        #products h2::before { background-image: url('https://img.icons8.com/color/48/medicine.png'); }
+        #suppliers h2::before { background-image: url('https://img.icons8.com/color/48/supplier.png'); }
+        #branches h2::before { background-image: url('https://img.icons8.com/color/48/hospital-3.png'); }
+        #patients h2::before { background-image: url('https://img.icons8.com/color/48/patient-oxygen-mask.png'); }
+        #appointments h2::before { background-image: url('https://img.icons8.com/color/48/calendar.png'); }
+        #checkups h2::before { background-image: url('https://img.icons8.com/color/48/stethoscope.png'); }
+        #pharmacy h2::before { background-image: url('https://img.icons8.com/color/48/pharmacy-shop.png'); }
+        #inventory h2::before { background-image: url('https://img.icons8.com/color/48/warehouse.png'); }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .form-group button {
+            padding: 10px 20px;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .form-group button:hover {
+            background: #218838;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .actions button {
+            margin-right: 5px;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .actions .edit {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .actions .delete {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .upload-container {
+            margin-top: 10px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.9em;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="https://img.icons8.com/color/96/clinic.png" alt="Clinic Logo">
+        <h1>Clinic Management System</h1>
+        <button id="logout-btn" title="Logout" onclick="window.location.href='index.html'">Logout</button>
+    </header>
+    <div class="container">
+        <div class="tabs">
+            <button onclick="showSection('products')">Products</button>
+            <button onclick="showSection('suppliers')">Suppliers</button>
+            <button onclick="showSection('branches')">Branches</button>
+            <button onclick="showSection('patients')">Patients</button>
+            <button onclick="showSection('appointments')">Appointments</button>
+            <button onclick="showSection('checkups')">Checkups</button>
+            <button onclick="showSection('pharmacy')">Pharmacy</button>
+            <button onclick="showSection('inventory')">Inventory</button>
+        </div>
+
+        <!-- Products Section -->
+        <div id="products" class="section">
+            <h2>Manage Medicines (Admin/Receptionist)</h2>
+            <div class="form-group">
+                <label for="medicine-name">Medicine Name</label>
+                <input type="text" id="medicine-name" placeholder="Enter medicine name">
+                <label for="medicine-price">Price</label>
+                <input type="number" id="medicine-price" placeholder="Enter price">
+                <button onclick="addMedicine()">Add Medicine</button>
+            </div>
+            <table id="medicine-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="medicine-list"></tbody>
+            </table>
+        </div>
+
+        <!-- Suppliers Section -->
+        <div id="suppliers" class="section">
+            <h2>Manage Suppliers (Admin/Receptionist)</h2>
+            <div class="form-group">
+                <label for="supplier-name">Supplier Name</label>
+                <input type="text" id="supplier-name" placeholder="Enter supplier name">
+                <label for="supplier-contact">Contact</label>
+                <input type="text" id="supplier-contact" placeholder="Enter contact">
+                <button onclick="addSupplier()">Add Supplier</button>
+            </div>
+            <table id="supplier-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Contact</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="supplier-list"></tbody>
+            </table>
+        </div>
+
+        <!-- Branches Section -->
+        <div id="branches" class="section">
+            <h2>Manage Branches (Admin/Main Doctor)</h2>
+            <div class="form-group">
+                <label for="branch-name">Branch Name</label>
+                <input type="text" id="branch-name" placeholder="Enter branch name">
+                <label for="branch-address">Address</label>
+                <input type="text" id="branch-address" placeholder="Enter address">
+                <button onclick="addBranch()">Add Branch</button>
+            </div>
+            <table id="branch-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="branch-list"></tbody>
+            </table>
+        </div>
+
+        <!-- Patients Section -->
+        <div id="patients" class="section">
+            <h2>Manage Patients (Receptionist/Assistant Doctor)</h2>
+            <div class="form-group">
+                <label for="patient-name">Patient Name</label>
+                <input type="text" id="patient-name" placeholder="Enter patient name">
+                <label for="patient-contact">Contact</label>
+                <input type="text" id="patient-contact" placeholder="Enter contact">
+                <button onclick="addPatient()">Add Patient</button>
+            </div>
+            <table id="patient-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Contact</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="patient-list"></tbody>
+            </table>
+        </div>
+
+        <!-- Appointments Section -->
+        <div id="appointments" class="section">
+            <h2>Manage Appointments (Receptionist/Patient)</h2>
+            <div class="form-group">
+                <label for="appointment-patient">Patient</label>
+                <select id="appointment-patient"></select>
+                <label for="appointment-date">Date</label>
+                <input type="datetime-local" id="appointment-date">
+                <label for="appointment-branch">Branch</label>
+                <select id="appointment-branch"></select>
+                <button onclick="addAppointment()">Schedule Appointment</button>
+            </div>
+            <table id="appointment-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Patient</th>
+                        <th>Date</th>
+                        <th>Branch</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="appointment-list"></tbody>
+            </table>
+        </div>
+
+        <!-- Checkups Section -->
+        <div id="checkups" class="section">
+            <h2>Manage Checkups (Assistant Doctor/Main Doctor)</h2>
+            <div class="form-group">
+                <label for="checkup-patient">Patient</label>
+                <select id="checkup-patient"></select>
+                <label for="checkup-history">Medical History</label>
+                <textarea id="checkup-history" placeholder="Enter medical history"></textarea>
+                <label for="checkup-medicine">Medicine</label>
+                <select id="checkup-medicine"></select>
+                <label for="checkup-amount">Billing Amount</label>
+                <input type="number" id="checkup-amount" placeholder="Enter amount">
+                <div class="upload-container">
+                    <label for="checkup-report">Upload Report</label>
+                    <input type="file" id="checkup-report" accept="image/*">
+                </div>
+                <button onclick="addCheckup()">Add Checkup</button>
+            </div>
+            <table id="checkup-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Patient</th>
+                        <th>History</th>
+                        <th>Medicine</th>
+                        <th>Amount</th>
+                        <th>Report</th>
+                    </tr>
+                </thead>
+                <tbody id="checkup-list"></tbody>
+            </table>
+        </div>
+
+        <!-- Pharmacy Section -->
+        <div id="pharmacy" class="section">
+            <h2>Manage Pharmacy (Pharmacist)</h2>
+            <div class="form-group">
+                <label for="pharmacy-checkup">Checkup</label>
+                <select id="pharmacy-checkup"></select>
+                <label for="pharmacy-amount">Medicine Bill Amount</label>
+                <input type="number" id="pharmacy-amount" placeholder="Enter amount">
+                <button onclick="addPharmacyBill()">Generate Bill</button>
+            </div>
+            <table id="pharmacy-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Checkup ID</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="pharmacy-list"></tbody>
+            </table>
+        </div>
+
+        <!-- Inventory Section -->
+        <div id="inventory" class="section">
+            <h2>Manage Inventory (Admin/Receptionist/Pharmacist)</h2>
+            <div class="form-group">
+                <label for="inventory-medicine">Medicine</label>
+                <select id="inventory-medicine"></select>
+                <label for="inventory-batch">Batch Number</label>
+                <input type="text" id="inventory-batch" placeholder="Enter batch number">
+                <label for="inventory-expiry">Expiry Date</label>
+                <input type="date" id="inventory-expiry">
+                <label for="inventory-quantity">Quantity</label>
+                <input type="number" id="inventory-quantity" placeholder="Enter quantity">
+                <button onclick="addInventory()">Add Inventory</button>
+            </div>
+            <table id="inventory-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Medicine</th>
+                        <th>Batch</th>
+                        <th>Expiry</th>
+                        <th>Quantity</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="inventory-list"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Initialize localStorage data
+        const medicines = JSON.parse(localStorage.getItem('medicines')) || [];
+        const suppliers = JSON.parse(localStorage.getItem('suppliers')) || [];
+        const branches = JSON.parse(localStorage.getItem('branches')) || [];
+        const patients = JSON.parse(localStorage.getItem('patients')) || [];
+        const appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+        const checkups = JSON.parse(localStorage.getItem('checkups')) || [];
+        const pharmacyBills = JSON.parse(localStorage.getItem('pharmacyBills')) || [];
+        const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+
+        // Show section
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+            if (sectionId === 'appointments') updateAppointmentDropdowns();
+            if (sectionId === 'checkups') updateCheckupDropdowns();
+            if (sectionId === 'pharmacy') updatePharmacyDropdowns();
+            if (sectionId === 'inventory') updateInventoryDropdowns();
+        }
+
+        // Medicines CRUD
+        function addMedicine() {
+            const name = document.getElementById('medicine-name').value;
+            const price = document.getElementById('medicine-price').value;
+            if (name && price) {
+                medicines.push({ id: Date.now(), name, price });
+                localStorage.setItem('medicines', JSON.stringify(medicines));
+                renderMedicines();
+                document.getElementById('medicine-name').value = '';
+                document.getElementById('medicine-price').value = '';
+            }
+        }
+
+        function renderMedicines() {
+            const list = document.getElementById('medicine-list');
+            list.innerHTML = '';
+            medicines.forEach(medicine => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${medicine.id}</td>
+                    <td>${medicine.name}</td>
+                    <td>${medicine.price}</td>
+                    <td class="actions">
+                        <button class="edit" onclick="editMedicine(${medicine.id})">Edit</button>
+                        <button class="delete" onclick="deleteMedicine(${medicine.id})">Delete</button>
+                    </td>
+                `;
+                list.appendChild(tr);
+            });
+        }
+
+        function editMedicine(id) {
+            const medicine = medicines.find(m => m.id === id);
+            document.getElementById('medicine-name').value = medicine.name;
+            document.getElementById('medicine-price').value = medicine.price;
+            deleteMedicine(id);
+        }
+
+        function deleteMedicine(id) {
+            const index = medicines.findIndex(m => m.id === id);
+            medicines.splice(index, 1);
+            localStorage.setItem('medicines', JSON.stringify(medicines));
+            renderMedicines();
+        }
+
+        // Suppliers CRUD
+        function addSupplier() {
+            const name = document.getElementById('supplier-name').value;
+            const contact = document.getElementById('supplier-contact').value;
+            if (name && contact) {
+                suppliers.push({ id: Date.now(), name, contact });
+                localStorage.setItem('suppliers', JSON.stringify(suppliers));
+                renderSuppliers();
+                document.getElementById('supplier-name').value = '';
+                document.getElementById('supplier-contact').value = '';
+            }
+        }
+
+        function renderSuppliers() {
+            const list = document.getElementById('supplier-list');
+            list.innerHTML = '';
+            suppliers.forEach(supplier => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${supplier.id}</td>
+                    <td>${supplier.name}</td>
+                    <td>${supplier.contact}</td>
+                    <td class="actions">
+                        <button class="edit" onclick="editSupplier(${supplier.id})">Edit</button>
+                        <button class="delete" onclick="deleteSupplier(${supplier.id})">Delete</button>
+                    </td>
+                `;
+                list.appendChild(tr);
+            });
+        }
+
+        function editSupplier(id) {
+            const supplier = suppliers.find(s => s.id === id);
+            document.getElementById('supplier-name').value = supplier.name;
+            document.getElementById('supplier-contact').value = supplier.contact;
+            deleteSupplier(id);
+        }
+
+        function deleteSupplier(id) {
+            const index = suppliers.findIndex(s => s.id === id);
+            suppliers.splice(index, 1);
+            localStorage.setItem('suppliers', JSON.stringify(suppliers));
+            renderSuppliers();
+        }
+
+        // Branches CRUD
+        function addBranch() {
+            const name = document.getElementById('branch-name').value;
+            const address = document.getElementById('branch-address').value;
+            if (name && address) {
+                branches.push({ id: Date.now(), name, address });
+                localStorage.setItem('branches', JSON.stringify(branches));
+                renderBranches();
+                document.getElementById('branch-name').value = '';
+                document.getElementById('branch-address').value = '';
+            }
+        }
+
+        function renderBranches() {
+            const list = document.getElementById('branch-list');
+            list.innerHTML = '';
+            branches.forEach(branch => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${branch.id}</td>
+                    <td>${branch.name}</td>
+                    <td>${branch.address}</td>
+                    <td class="actions">
+                        <button class="edit" onclick="editBranch(${branch.id})">Edit</button>
+                        <button class="delete" onclick="deleteBranch(${branch.id})">Delete</button>
+                    </td>
+                `;
+                list.appendChild(tr);
+            });
+        }
+
+        function editBranch(id) {
+            const branch = branches.find(b => b.id === id);
+            document.getElementById('branch-name').value = branch.name;
+            document.getElementById('branch-address').value = branch.address;
+            deleteBranch(id);
+        }
+
+        function deleteBranch(id) {
+            const index = branches.findIndex(b => b.id === id);
+            branches.splice(index, 1);
+            localStorage.setItem('branches', JSON.stringify(branches));
+            renderBranches();
+        }
+
+        // Patients CRUD
+        function addPatient() {
+            const name = document.getElementById('patient-name').value;
+            const contact = document.getElementById('patient-contact').value;
+            if (name && contact) {
+                patients.push({ id: Date.now(), name, contact });
+                localStorage.setItem('patients', JSON.stringify(patients));
+                renderPatients();
+                document.getElementById('patient-name').value = '';
+                document.getElementById('patient-contact').value = '';
+            }
+        }
+
+        function renderPatients() {
+            const list = document.getElementById('patient-list');
+            list.innerHTML = '';
+            patients.forEach(patient => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${patient.id}</td>
+                    <td>${patient.name}</td>
+                    <td>${patient.contact}</td>
+                    <td class="actions">
+                        <button class="edit" onclick="editPatient(${patient.id})">Edit</button>
+                        <button class="delete" onclick="deletePatient(${patient.id})">Delete</button>
+                    </td>
+                `;
+                list.appendChild(tr);
+            });
+        }
+
+        function editPatient(id) {
+            const patient = patients.find(p => p.id === id);
+            document.getElementById('patient-name').value = patient.name;
+            document.getElementById('patient-contact').value = patient.contact;
+            deletePatient(id);
+        }
+
+        function deletePatient(id) {
+            const index = patients.findIndex(p => p.id === id);
+            patients.splice(index, 1);
+            localStorage.setItem('patients', JSON.stringify(patients));
+            renderPatients();
+        }
+
+        // Appointments
+        function updateAppointmentDropdowns() {
+            const patientSelect = document.getElementById('appointment-patient');
+            const branchSelect = document.getElementById('appointment-branch');
+            patientSelect.innerHTML = '<option value="">Select Patient</option>';
+            branchSelect.innerHTML = '<option value="">Select Branch</option>';
+            patients.forEach(patient => {
+                patientSelect.innerHTML += `<option value="${patient.id}">${patient.name}</option>`;
+            });
+            branches.forEach(branch => {
+                branchSelect.innerHTML += `<option value="${branch.id}">${branch.name}</option>`;
+            });
+        }
+
+        function addAppointment() {
+            const patientId = document.getElementById('appointment-patient').value;
+            const date = document.getElementById('appointment-date').value;
+            const branchId = document.getElementById('appointment-branch').value;
+            if (patientId && date && branchId) {
+                appointments.push({ id: Date.now(), patientId, date, branchId });
+                localStorage.setItem('appointments', JSON.stringify(appointments));
+                renderAppointments();
+                document.getElementById('appointment-patient').value = '';
+                document.getElementById('appointment-date').value = '';
+                document.getElementById('appointment-branch').value = '';
+            }
+        }
+
+        function renderAppointments() {
+            const list = document.getElementById('appointment-list');
+            list.innerHTML = '';
+            appointments.forEach(appointment => {
+                const patient = patients.find(p => p.id === parseInt(appointment.patientId));
+                const branch = branches.find(b => b.id === parseInt(appointment.branchId));
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${appointment.id}</td>
+                    <td>${patient ? patient.name : 'Unknown'}</td>
+                    <td>${appointment.date}</td>
+                    <td>${branch ? branch.name : 'Unknown'}</td>
+                    <td class="actions">
+                        <button class="edit" onclick="editAppointment(${appointment.id})">Reschedule</button>
+                        <button class="delete" onclick="deleteAppointment(${appointment.id})">Cancel</button>
+                    </td>
+                `;
+                list.appendChild(tr);
+            });
+        }
+
+        function editAppointment(id) {
+            const appointment = appointments.find(a => a.id === id);
+            document.getElementById('appointment-patient').value = appointment.patientId;
+            document.getElementById('appointment-date').value = appointment.date;
+            document.getElementById('appointment-branch').value = appointment.branchId;
+            deleteAppointment(id);
+        }
+
+        function deleteAppointment(id) {
+            const index = appointments.findIndex(a => a.id === id);
+            appointments.splice(index, 1);
+            localStorage.setItem('appointments', JSON.stringify(appointments));
+            renderAppointments();
+        }
+
+        // Checkups
+        function updateCheckupDropdowns() {
+            const patientSelect = document.getElementById('checkup-patient');
+            const medicineSelect = document.getElementById('checkup-medicine');
+            patientSelect.innerHTML = '<option value="">Select Patient</option>';
+            medicineSelect.innerHTML = '<option value="">Select Medicine</option>';
+            patients.forEach(patient => {
+                patientSelect.innerHTML += `<option value="${patient.id}">${patient.name}</option>`;
+            });
+            medicines.forEach(medicine => {
+                medicineSelect.innerHTML += `<option value="${medicine.id}">${medicine.name}</option>`;
+            });
+        }
+
+        function addCheckup() {
+            const patientId = document.getElementById('checkup-patient').value;
+            const history = document.getElementById('checkup-history').value;
+            const medicineId = document.getElementById('checkup-medicine').value;
+            const amount = document.getElementById('checkup-amount').value;
+            const report = document.getElementById('checkup-report').files[0];
+            const reportUrl = report ? URL.createObjectURL(report) : '';
+            if (patientId && history && medicineId && amount) {
+                checkups.push({ id: Date.now(), patientId, history, medicineId, amount, reportUrl });
+                localStorage.setItem('checkups', JSON.stringify(checkups));
+                renderCheckups();
+                document.getElementById('checkup-patient').value = '';
+                document.getElementById('checkup-history').value = '';
+                document.getElementById('checkup-medicine').value = '';
+                document.getElementById('checkup-amount').value = '';
+                document.getElementById('checkup-report').value = '';
+            }
+        }
+
+        function renderCheckups() {
+            const list = document.getElementById('checkup-list');
+            list.innerHTML = '';
+            checkups.forEach(checkup => {
+                const patient = patients.find(p => p.id === parseInt(checkup.patientId));
+                const medicine = medicines.find(m => m.id === parseInt(checkup.medicineId));
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${checkup.id}</td>
+                    <td>${patient ? patient.name : 'Unknown'}</td>
+                    <td>${checkup.history}</td>
+                    <td>${medicine ? medicine.name : 'Unknown'}</td>
+                    <td>${checkup.amount}</td>
+                    <td>${checkup.reportUrl ? `<a href="${checkup.reportUrl}" target="_blank">View</a>` : 'None'}</td>
+                `;
+                list.appendChild(tr);
+            });
+        }
+
+        // Pharmacy
+        function updatePharmacyDropdowns() {
+            const checkupSelect = document.getElementById('pharmacy-checkup');
+            checkupSelect.innerHTML = '<option value="">Select Checkup</option>';
+            checkups.forEach(checkup => {
+                const patient = patients.find(p => p.id === parseInt(checkup.patientId));
+                checkupSelect.innerHTML += `<option value="${checkup.id}">${patient ? patient.name : 'Unknown'} - ${checkup.id}</option>`;
+            });
+        }
+
+        function addPharmacyBill() {
+            const checkupId = document.getElementById('pharmacy-checkup').value;
+            const amount = document.getElementById('pharmacy-amount').value;
+            if (checkupId && amount) {
+                pharmacyBills.push({ id: Date.now(), checkupId, amount });
+                localStorage.setItem('pharmacyBills', JSON.stringify(pharmacyBills));
+                renderPharmacyBills();
+                document.getElementById('pharmacy-checkup').value = '';
+                document.getElementById('pharmacy-amount').value = '';
+            }
+        }
+
+        function renderPharmacyBills() {
+            const list = document.getElementById('pharmacy-list');
+            list.innerHTML = '';
+            pharmacyBills.forEach(bill => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${bill.id}</td>
+                    <td>${bill.checkupId}</td>
+                    <td>${bill.amount}</td>
+                `;
+                list.appendChild(tr);
+            });
+        }
+
+        // Inventory
+        function updateInventoryDropdowns() {
+            const medicineSelect = document.getElementById('inventory-medicine');
+            medicineSelect.innerHTML = '<option value="">Select Medicine</option>';
+            medicines.forEach(medicine => {
+                medicineSelect.innerHTML += `<option value="${medicine.id}">${medicine.name}</option>`;
+            });
+        }
+
+        function addInventory() {
+            const medicineId = document.getElementById('inventory-medicine').value;
+            const batch = document.getElementById('inventory-batch').value;
+            const expiry = document.getElementById('inventory-expiry').value;
+            const quantity = document.getElementById('inventory-quantity').value;
+            if (medicineId && batch && expiry && quantity) {
+                inventory.push({ id: Date.now(), medicineId, batch, expiry, quantity });
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                renderInventory();
+                document.getElementById('inventory-medicine').value = '';
+                document.getElementById('inventory-batch').value = '';
+                document.getElementById('inventory-expiry').value = '';
+                document.getElementById('inventory-quantity').value = '';
+            }
+        }
+
+        function renderInventory() {
+            const list = document.getElementById('inventory-list');
+            list.innerHTML = '';
+            inventory.forEach(item => {
+                const medicine = medicines.find(m => m.id === parseInt(item.medicineId));
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.id}</td>
+                    <td>${medicine ? medicine.name : 'Unknown'}</td>
+                    <td>${item.batch}</td>
+                    <td>${item.expiry}</td>
+                    <td>${item.quantity}</td>
+                    <td class="actions">
+                        <button class="edit" onclick="editInventory(${item.id})">Edit</button>
+                        <button class="delete" onclick="deleteInventory(${item.id})">Delete</button>
+                    </td>
+                `;
+                list.appendChild(tr);
+            });
+        }
+
+        function editInventory(id) {
+            const item = inventory.find(i => i.id === id);
+            document.getElementById('inventory-medicine').value = item.medicineId;
+            document.getElementById('inventory-batch').value = item.batch;
+            document.getElementById('inventory-expiry').value = item.expiry;
+            document.getElementById('inventory-quantity').value = item.quantity;
+            deleteInventory(id);
+        }
+
+        function deleteInventory(id) {
+            const index = inventory.findIndex(i => i.id === id);
+            inventory.splice(index, 1);
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            renderInventory();
+        }
+
+        // Initial render
+        renderMedicines();
+        renderSuppliers();
+        renderBranches();
+        renderPatients();
+        renderAppointments();
+        renderCheckups();
+        renderPharmacyBills();
+        renderInventory();
+        showSection('products');
+    </script>
+</body>
+    </div>
+    <footer>
+        &copy; 2025 ClinicSoft. All rights reserved.
+    </footer>
+</body>
+</html>
